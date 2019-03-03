@@ -1,0 +1,43 @@
+{
+	"info": {
+		"_postman_id": "7854e936-b8f1-4e23-93bb-68921fd66cfa",
+		"name": "BeApi",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "register",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"firstname\":\"kritchat\",\n\t\"lastname\":\"Rojanaphruk\",\n\t\"user\":\"rkritchat22a\",\n\t\"pwd\":\"1234\",\n\t\"email\":\"rkritchat@gmail.com\",\n\t\"tell\":\"0925624149\"\n\n}"
+				},
+				"url": {
+					"raw": "https://us-central1-be-api-ts.cloudfunctions.net/helloWorld/user/register",
+					"protocol": "https",
+					"host": [
+						"us-central1-be-api-ts",
+						"cloudfunctions",
+						"net"
+					],
+					"path": [
+						"helloWorld",
+						"user",
+						"register"
+					]
+				},
+				"description": "s"
+			},
+			"response": []
+		}
+	]
+}
