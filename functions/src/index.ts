@@ -5,4 +5,4 @@ import * as routers from './routes/Routes'
 let app = express()
 app.use(routers)
 
-export const helloWorld = functions.https.onRequest(app)
+export const beApi = functions.https.onRequest(app)
