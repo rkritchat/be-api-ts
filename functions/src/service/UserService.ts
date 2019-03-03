@@ -3,15 +3,19 @@ import { Request, Response } from 'express'
 import { ResponseModel } from '../model/ResponseModel'
 import { StringUtils } from '../utils/StringUtils'
 import { ExceptionConstant } from '../constant/ExceptionConstant'
+import { UserDao } from '../dao/UserDao'
 
 export class UserService{
 
     public async execute(req:Request, res:Response){
         console.log('come 333333')
-        let userInfo= new UserModel(req)
+        let userInfo = new UserModel(req)
         try{
             console.log(userInfo)
             await this.valdiateRequiredField(userInfo)
+            let userDao = new UserDao();
+            await userDao.validateUser(userInfo)
+            await userDao.createUser(userInfo)
             res.send(new ResponseModel("0000", "success", userInfo))
         }catch(e){
             console.log(e)
