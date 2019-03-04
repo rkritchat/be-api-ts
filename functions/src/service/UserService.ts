@@ -1,30 +1,31 @@
 import { UserModel } from '../model/UserModel'
 import { Request, Response } from 'express'
-import { ResponseModel } from '../model/ResponseModel'
+import { ResponseUserModel } from '../model/response/ResponseUserModel'
 import { StringUtils } from '../utils/StringUtils'
 import { ExceptionConstant } from '../constant/ExceptionConstant'
 import { UserDao } from '../dao/UserDao'
 import { BeConstant } from '../constant/BeConstant'
 
 export class UserService{
-
+    
+    userDao = new UserDao();
     public async execute(req:Request, res:Response){
-        console.log('come 333333')
         let userInfo = new UserModel(req)
         try{
             console.log(userInfo)
             await this.valdiateRequiredField(userInfo)
-            let userDao = new UserDao();
-            if(await userDao.validateUser(userInfo) === BeConstant.FOUND){
-                throw ExceptionConstant.USERNAME_IS_ALREADY_EXSIT
-            }
-            await userDao.createUser(userInfo)
-            res.send(new ResponseModel("0000", "success", userInfo))
+            if(await this.validateUserId(userInfo.user) === BeConstant.FOUND)throw ExceptionConstant.USERNAME_IS_ALREADY_EXSIT
+            await this.userDao.createUser(userInfo)
+            res.send(new ResponseUserModel("0000", "Create user successfully", userInfo))
         }catch(e){
             console.log(e)
-            res.send(new ResponseModel("001", e, userInfo))
+            res.send(new ResponseUserModel("0001", e, userInfo))
         }
         return res
+    }
+
+    public async validateUserId(userInfo:string){
+        return await this.userDao.validateUser(userInfo)
     }
 
     private async valdiateRequiredField(userInfo:UserModel){

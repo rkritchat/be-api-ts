@@ -1,7 +1,10 @@
 import { TaskDao } from '../dao/TaskDao'
 import { Request, Response } from 'express'
-import { ResponseModel } from '../model/ResponseModel'
+import { ResponseTaskModel } from '../model/response/ResponseTaskModel'
 import { TaskModel } from '../model/TaskModel'
+import { UserService } from './UserService';
+import { BeConstant } from '../constant/BeConstant';
+import { ExceptionConstant } from '../constant/ExceptionConstant';
 
 export class TaskService{
 
@@ -14,13 +17,15 @@ export class TaskService{
     }
 
     public async createTask(){
-        let task = new TaskDao(this.request.body)
+        let taskDap = new TaskDao(this.request.body)
+        let userService = new UserService()
         try{
-            //TODO add validate user id
-            await task.createTask()
-            this.response.send(new ResponseModel('0000', 'Add task successfully', this.request.body))
+            let result = await userService.validateUserId(taskDap.taskModel.user)
+            if(result === BeConstant.NOT_FOUND) throw ExceptionConstant.INVALID_USERNAME
+            await taskDap.createTask()
+            this.response.send(new ResponseTaskModel('0000', 'Add task successfully', this.request.body))
         }catch(e){
-            this.response.send(new ResponseModel('0001', e, this.request.body))
+            this.response.send(new ResponseTaskModel('0001', e, this.request.body))
         }
         return this.response
     }
@@ -30,10 +35,11 @@ export class TaskService{
         let task = new TaskDao(taskModel)
         try{
             let result = await task.findAllTaskByUserId(this.request.body.user)
-            this.response.send(new ResponseModel('0000', 'Add task successfully', result))
+            this.response.send(new ResponseTaskModel('0000', 'Add task successfully', result))
         }catch(e){
-            this.response.send(new ResponseModel('0001', e, this.request.body))
+            this.response.send(new ResponseTaskModel('0001', e, this.request.body))
         }
         return this.response
     }
+
 }

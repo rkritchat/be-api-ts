@@ -15,12 +15,12 @@ export class UserDao {
         }
     }
 
-    public async validateUser(userInfo: UserModel){
+    public async validateUser(userInfo: string){
         console.log("====validate user======")
         return new Promise((reslove, reject)=>{
-            admin.database().ref("/users").child(userInfo.user).on("value",(snapshot)=>{
+            admin.database().ref("/users").child(userInfo).on("value",(snapshot)=>{
             if(snapshot!=null && snapshot.val()!=null){
-                reject(BeConstant.FOUND)
+                reslove(BeConstant.FOUND)
             }else{
                 reslove(BeConstant.NOT_FOUND)
             }

@@ -12,4 +12,5 @@ export class ExceptionConstant {
      static SYSTEM_ERROR_PLX_TRY_AGN = "System error please try again later."
 
      static USERNAME_IS_ALREADY_EXSIT = "Username is already exist."
+     static INVALID_USERNAME = "Invalid Username."
 }
