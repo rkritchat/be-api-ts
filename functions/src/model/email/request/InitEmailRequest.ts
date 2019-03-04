@@ -1,5 +1,5 @@
 import { EmailModel } from '../data/EmailModel'
-export class EmailRequest {
+export class InitEmailRequest {
     user:string
     emailModel:EmailModel
 

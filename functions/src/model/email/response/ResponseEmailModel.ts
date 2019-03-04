@@ -1,9 +1,9 @@
-import { EmailRequest } from "../request/EmailRequest";
+import { InitEmailRequest } from "../request/InitEmailRequest";
 
 export class ResponseEmailModel{
     statusCode:string
     statusDesc:string
-    emailRes:EmailRequest
+    emailRes:InitEmailRequest
 
     constructor(statusCode:string, statusDesc:string, emailRes:any){
         this.statusCode = statusCode
