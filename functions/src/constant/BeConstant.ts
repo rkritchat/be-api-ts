@@ -8,4 +8,7 @@ export class BeConstant{
         storageBucket: "be-api-ts.appspot.com",
         messagingSenderId: "208653275699"
     }
+
+    static FOUND = "found"
+    static NOT_FOUND = "not found"
 }

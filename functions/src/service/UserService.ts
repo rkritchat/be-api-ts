@@ -4,6 +4,7 @@ import { ResponseModel } from '../model/ResponseModel'
 import { StringUtils } from '../utils/StringUtils'
 import { ExceptionConstant } from '../constant/ExceptionConstant'
 import { UserDao } from '../dao/UserDao'
+import { BeConstant } from '../constant/BeConstant'
 
 export class UserService{
 
@@ -14,7 +15,9 @@ export class UserService{
             console.log(userInfo)
             await this.valdiateRequiredField(userInfo)
             let userDao = new UserDao();
-            await userDao.validateUser(userInfo)
+            if(await userDao.validateUser(userInfo) === BeConstant.FOUND){
+                throw ExceptionConstant.USERNAME_IS_ALREADY_EXSIT
+            }
             await userDao.createUser(userInfo)
             res.send(new ResponseModel("0000", "success", userInfo))
         }catch(e){

@@ -1,8 +1,7 @@
-import * as admin from 'firebase-admin'
+import * as admin from '../utils/DatabaseUtils'
 import { BeConstant } from '../constant/BeConstant'
 import { UserModel } from '../model/UserModel';
-
-admin.initializeApp(BeConstant.DATABASE_CONFIG)
+import { ExceptionConstant } from '../constant/ExceptionConstant'
 
 export class UserDao {
     
@@ -12,7 +11,7 @@ export class UserDao {
             await admin.database().ref("/users").child(userInfo.user).set(userInfo)
         }catch(e){
             console.log('Exception occur while inser data' + e)
-            throw 'System error please try again later'
+            throw ExceptionConstant.SYSTEM_ERROR_PLX_TRY_AGN
         }
     }
 
@@ -21,9 +20,9 @@ export class UserDao {
         return new Promise((reslove, reject)=>{
             admin.database().ref("/users").child(userInfo.user).on("value",(snapshot)=>{
             if(snapshot!=null && snapshot.val()!=null){
-                reject('Username is already exist.')
+                reject(BeConstant.FOUND)
             }else{
-                reslove('pass')
+                reslove(BeConstant.NOT_FOUND)
             }
         })});
     }
