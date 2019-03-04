@@ -1,7 +1,7 @@
 import { TaskDao } from '../dao/TaskDao'
 import { Request, Response } from 'express'
-import { ResponseTaskModel } from '../model/response/ResponseTaskModel'
-import { TaskModel } from '../model/TaskModel'
+import { ResponseTaskModel } from '../model/task/response/ResponseTaskModel'
+import { TaskModel } from '../model/task/data/TaskModel'
 import { UserService } from './UserService';
 import { BeConstant } from '../constant/BeConstant';
 import { ExceptionConstant } from '../constant/ExceptionConstant';

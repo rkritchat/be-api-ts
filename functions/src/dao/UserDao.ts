@@ -1,6 +1,6 @@
 import * as admin from '../utils/DatabaseUtils'
 import { BeConstant } from '../constant/BeConstant'
-import { UserModel } from '../model/UserModel';
+import { UserModel } from '../model/user/data/UserModel';
 import { ExceptionConstant } from '../constant/ExceptionConstant'
 
 export class UserDao {

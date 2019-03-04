@@ -1,6 +1,6 @@
 import * as mail from 'nodemailer'
-import { ResponseModel } from '../model/ResponseModel'
 import { Response } from 'express';
+import { ResponseEmailModel } from '../model/email/response/ResponseEmailModel';
 
 export class EamilService{
 
@@ -25,10 +25,10 @@ export class EamilService{
         this.transport.sendMail(this.mailOptions,(err,info)=>{
             if(err){
                 console.log('Failed..'+ err)
-                response.send(new ResponseModel('0001','ERROR', err))
+                response.send(new ResponseEmailModel('0001','ERROR', err))
             }else{
                 console.log('Success..'+ info)
-                response.send(new ResponseModel('0000','SUCCESS', info))
+                response.send(new ResponseEmailModel('0000','SUCCESS', info))
             }
         })
       }

@@ -1,6 +1,6 @@
-import { UserModel } from '../model/UserModel'
+import { UserModel } from '../model/user/data/UserModel'
 import { Request, Response } from 'express'
-import { ResponseUserModel } from '../model/response/ResponseUserModel'
+import { ResponseUserModel } from '../model/user/response/ResponseUserModel'
 import { StringUtils } from '../utils/StringUtils'
 import { ExceptionConstant } from '../constant/ExceptionConstant'
 import { UserDao } from '../dao/UserDao'

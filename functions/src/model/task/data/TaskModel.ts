@@ -15,5 +15,4 @@ export class TaskModel{
         this.taskProgress = taskProgress
         this.taskStatus = taskStatus
     }
-    
 }

@@ -1,4 +1,4 @@
-import { TaskModel } from '../model/TaskModel';
+import { TaskModel } from '../model/task/data/TaskModel';
 import { ExceptionConstant } from '../constant/ExceptionConstant'
 import * as admin from '../utils/DatabaseUtils'
 
