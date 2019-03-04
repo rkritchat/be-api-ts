@@ -5,6 +5,7 @@ import { TaskModel } from '../model/task/data/TaskModel'
 import { UserService } from './UserService';
 import { BeConstant } from '../constant/BeConstant';
 import { ExceptionConstant } from '../constant/ExceptionConstant';
+import { SuccessConstants } from '../constant/SuccessConstants';
 
 export class TaskService{
 
@@ -35,7 +36,7 @@ export class TaskService{
         let task = new TaskDao(taskModel)
         try{
             let result = await task.findAllTaskByUserId(this.request.body.user)
-            this.response.send(new ResponseTaskModel('0000', 'Add task successfully', result))
+            this.response.send(new ResponseTaskModel('0000',  SuccessConstants.INQUIRY_TASK_SUCCESSFULLY, result))
         }catch(e){
             this.response.send(new ResponseTaskModel('0001', e, this.request.body))
         }
