@@ -22,7 +22,7 @@ export class UserService{
         try{
             console.log(userInfo)
             await this.valdiateRequiredField(userInfo)
-            if(await this.validateUserId(userInfo.user) === BeConstant.FOUND)throw ExceptionConstant.USERNAME_IS_ALREADY_EXSIT
+            if(await this.validateUserId(userInfo.user, true) === BeConstant.FOUND)throw ExceptionConstant.USERNAME_IS_ALREADY_EXSIT
             await this.userDao.createUser(userInfo)
             res.send(new ResponseUserModel("0000", "Create user successfully", userInfo))
         }catch(e){
@@ -32,8 +32,8 @@ export class UserService{
         return res
     }
 
-    public async validateUserId(userInfo:string){
-        return await this.userDao.validateUser(userInfo, true)
+    public async validateUserId(userInfo:string, isValidateOnly:boolean){
+        return await this.userDao.validateUser(userInfo, isValidateOnly)
     }
 
     private async valdiateRequiredField(userInfo:UserModel){

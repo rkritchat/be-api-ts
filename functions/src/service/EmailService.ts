@@ -3,12 +3,18 @@ import { ResponseEmailModel } from '../model/email/response/ResponseEmailModel';
 import { EmailDao } from '../dao/EmailDao'
 import { ExceptionConstant } from '../constant/ExceptionConstant';
 import * as mail from 'nodemailer'
+import { plainToClass } from "class-transformer";
+import { EmailModel } from '../model/email/data/EmailModel';
+import { EmailTemplate } from '../constant/EmailTemplate'
+import { UserService } from '../service/UserService'
+import { UserModel } from '../model/user/data/UserModel';
+
 
 export class EamilService{
 
     emailDao = new EmailDao()
 
-    private initTransport(email:string,pass:string){
+    private initTransport(email:string, pass:string){
         return mail.createTransport({
             host: 'smtp.gmail.com',
             port: 465,
@@ -36,9 +42,15 @@ export class EamilService{
    
     public async sendEmail(req:Request, res:Response){
         try{
-            let result = await this.emailDao.findEmailInfoByUserId(req.body.user)
-            let emailInfo = JSON.parse(JSON.stringify(result))
-            let mailOption = this.initEmailOptoion(emailInfo.email, emailInfo.to, emailInfo.cc, 'ทดสอบส่งเมลล์', req.body.text)
+            let body = req.body
+            let emailGenerator = new EmailTemplate(body.lastDay, body.today, body.nextDay)
+            let userModel = plainToClass(UserModel, await new UserService().validateUserId(body.user, false))
+            //Geneate email subject
+            let emailSubject = emailGenerator.generateEmailSubject(userModel.firstname, userModel.lastname)
+            //Generate content
+            let content = emailGenerator.generateContent()
+            let emailInfo = plainToClass(EmailModel, await this.emailDao.findEmailInfoByUserId(body.user))
+            let mailOption = this.initEmailOptoion(emailInfo.email, emailInfo.to, emailInfo.cc, emailSubject, content)
             console.log(mailOption)
             let sender = this.initTransport(emailInfo.email, emailInfo.password);
             sender.sendMail(mailOption,(err,info)=>{

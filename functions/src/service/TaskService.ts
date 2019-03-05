@@ -13,7 +13,7 @@ export class TaskService{
         let taskDap = new TaskDao(req.body)
         let userService = new UserService()
         try{
-            let result = await userService.validateUserId(taskDap.taskModel.user)
+            let result = await userService.validateUserId(taskDap.taskModel.user, true)
             if(result === BeConstant.NOT_FOUND) throw ExceptionConstant.INVALID_USERNAME
             await taskDap.createTask()
             res.send(new ResponseTaskModel('0000', 'Add task successfully', req.body))
