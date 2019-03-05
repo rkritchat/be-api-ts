@@ -9,38 +9,31 @@ import { SuccessConstants } from '../constant/SuccessConstants';
 
 export class TaskService{
 
-    request:Request
-    response:Response
-
-    constructor(request:Request, response:Response){
-        this.request = request
-        this.response = response
-    }
-
-    public async createTask(){
-        let taskDap = new TaskDao(this.request.body)
+    public async createTask(req:Request, res:Response){
+        let taskDap = new TaskDao(req.body)
         let userService = new UserService()
         try{
             let result = await userService.validateUserId(taskDap.taskModel.user)
             if(result === BeConstant.NOT_FOUND) throw ExceptionConstant.INVALID_USERNAME
             await taskDap.createTask()
-            this.response.send(new ResponseTaskModel('0000', 'Add task successfully', this.request.body))
+            res.send(new ResponseTaskModel('0000', 'Add task successfully', req.body))
         }catch(e){
-            this.response.send(new ResponseTaskModel('0001', e, this.request.body))
+            res.send(new ResponseTaskModel('0001', e, req.body))
         }
-        return this.response
+        return res
     }
 
-    public async findTaskByUserId(){
-        let taskModel = new TaskModel(0, '', this.request.body.user,'', '', '')
+    public async findTaskByUserId(req:Request, res:Response){
+        let taskModel = new TaskModel(0, '', req.body.user,'', '', '')
         let task = new TaskDao(taskModel)
         try{
-            let result = await task.findAllTaskByUserId(this.request.body.user)
-            this.response.send(new ResponseTaskModel('0000',  SuccessConstants.INQUIRY_TASK_SUCCESSFULLY, result))
+            let result = await task.findAllTaskByUserId(req.body.user)            
+
+            res.send(new ResponseTaskModel('0000',  SuccessConstants.INQUIRY_TASK_SUCCESSFULLY, result))
         }catch(e){
-            this.response.send(new ResponseTaskModel('0001', e, this.request.body))
+            res.send(new ResponseTaskModel('0001', e, req.body))
         }
-        return this.response
+        return res
     }
 
 }

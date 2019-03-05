@@ -21,7 +21,9 @@ export class UserDao {
             admin.database().ref("/users").child(userInfo).on("value",(snapshot)=>{
             if(snapshot!=null && snapshot.val()!=null){
                 reslove(BeConstant.FOUND)
+                console.log("====FOUND======")
             }else{
+                console.log("====NOT FOUND======")
                 reslove(BeConstant.NOT_FOUND)
             }
         })});

@@ -4,8 +4,8 @@ import { TaskService } from '../service/TaskService'
 let route = exporess.Router()
 
 route.put('/add', (req,res)=>{
-    let task =  new TaskService(req, res);
-    return task.createTask()
+    let task =  new TaskService();
+    return task.createTask(req, res)
 })
 
 route.patch('/modify', (req,res)=>{
@@ -17,8 +17,8 @@ route.delete('/dellete', (req,res)=>{
 })
 
 route.post('/find', (req,res)=>{
-    let task = new TaskService(req, res)
-    return task.findTaskByUserId()
+    let task = new TaskService()
+    return task.findTaskByUserId(req, res)
 })
 
 export = route
