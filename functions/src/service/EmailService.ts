@@ -6,6 +6,8 @@ import * as mail from 'nodemailer'
 
 export class EamilService{
 
+    emailDao = new EmailDao()
+
     private initTransport(email:string,pass:string){
         return mail.createTransport({
             host: 'smtp.gmail.com',
@@ -27,11 +29,14 @@ export class EamilService{
             html: body
         }
     }
+
+    public async getEmailInfoByUserId(user:string){
+        return await this.emailDao.findEmailInfoByUserId(user)
+    }
    
     public async sendEmail(req:Request, res:Response){
-        let emailDao = new EmailDao()
         try{
-            let result = await emailDao.findEmailInfoByUserId(req.body.user)
+            let result = await this.emailDao.findEmailInfoByUserId(req.body.user)
             let emailInfo = JSON.parse(JSON.stringify(result))
             let mailOption = this.initEmailOptoion(emailInfo.email, emailInfo.to, emailInfo.cc, 'ทดสอบส่งเมลล์', req.body.text)
             console.log(mailOption)

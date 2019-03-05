@@ -10,12 +10,15 @@ export class EmailDao{
     }
 
     public async findEmailInfoByUserId(user:string){
+        console.log('=== get emailInfo ==== ')
         return new Promise((reslove,reject)=>{ 
             admin.database().ref(PathReferenceConstants.EMAIL_INFO).child(user).on("value", snapshot =>{
-                if(snapshot==null){
-                    reject(BeConstant.NOT_FOUND)
-                }else{
+                if(snapshot!=null && snapshot.val()!=null){
+                    console.log("FOUND")
                     reslove(snapshot.val())
+                }else{
+                    console.log("NOT FOUND")
+                    reject(BeConstant.NOT_FOUND)
                 }
         })})
     }

@@ -5,12 +5,20 @@ import { StringUtils } from '../utils/StringUtils'
 import { ExceptionConstant } from '../constant/ExceptionConstant'
 import { UserDao } from '../dao/UserDao'
 import { BeConstant } from '../constant/BeConstant'
+import { UserLoginRequest } from '../model/user/request/UserLoginRequest';
+import { plainToClass } from "class-transformer";
+import { EamilService } from '../service/EmailService'
+import { EmailModel } from '../model/email/data/EmailModel';
+import { ResponseUserLogin } from '../model/user/response/ResponseUserLogin';
+import { ResponseCommon } from '../model/common/ResponseCommon';
+
 
 export class UserService{
     
     userDao = new UserDao();
-    public async execute(req:Request, res:Response){
-        let userInfo = new UserModel(req)
+    public async register(req:Request, res:Response){
+        let body = req.body
+        let userInfo = new UserModel(body.firstname, body.lastname, body.user, body.pwd, body.tell, body.email)
         try{
             console.log(userInfo)
             await this.valdiateRequiredField(userInfo)
@@ -25,7 +33,7 @@ export class UserService{
     }
 
     public async validateUserId(userInfo:string){
-        return await this.userDao.validateUser(userInfo)
+        return await this.userDao.validateUser(userInfo, true)
     }
 
     private async valdiateRequiredField(userInfo:UserModel){
@@ -46,5 +54,22 @@ export class UserService{
                 reslove('pass')
             }
         })
+    }
+
+    public async login(req:Request, res:Response){
+        try{            
+            let user = new UserLoginRequest(req.body.user, req.body.pwd)
+            let result = await this.userDao.validateUserAndPwd(user.user, user.pwd)
+            let userModel = plainToClass(UserModel, result)
+            let email = await new EamilService().getEmailInfoByUserId(user.user)
+            console.log(email)
+            let emailModel = plainToClass(EmailModel, email)
+            userModel.pwd = ''
+            emailModel.password = ''
+            res.send(new ResponseUserLogin('0000','Login successfully', user.user, userModel, emailModel))
+        }catch(e){
+            res.send(new ResponseCommon('0001', e))
+        }
+        return res
     }
 }

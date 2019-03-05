@@ -15,17 +15,37 @@ export class UserDao {
         }
     }
 
-    public async validateUser(userInfo: string){
+    public async validateUser(userInfo: string, isValidateOnly:boolean){
         console.log("====validate user======")
         return new Promise((reslove, reject)=>{
             admin.database().ref("/users").child(userInfo).on("value",(snapshot)=>{
             if(snapshot!=null && snapshot.val()!=null){
-                reslove(BeConstant.FOUND)
+                reslove(isValidateOnly? BeConstant.FOUND:snapshot.val())
                 console.log("====FOUND======")
             }else{
                 console.log("====NOT FOUND======")
                 reslove(BeConstant.NOT_FOUND)
             }
         })});
+    }
+
+    public async validateUserAndPwd(user:string, pwd:string){
+        console.log("==== validateUserAndPwd ======")
+        return new Promise((reslove,reject)=>{
+            admin.database().ref("/users").child(user).on("value",(snapshot)=>{
+                if(snapshot!=null && snapshot.val()!=null){
+                    if(snapshot.child('pwd').val() === pwd){
+                        console.log("==== Password is match ======")
+                        reslove(snapshot.val())
+                    }else{
+                        console.log("==== Password is mot match ======")
+                        reject(ExceptionConstant.INVALID_USERNAME_OR_PASSWORD)
+                    }
+                }else{
+                    reject(ExceptionConstant.INVALID_USERNAME_OR_PASSWORD)
+                }
+            })
+        })
+
     }
 }
