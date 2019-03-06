@@ -48,7 +48,7 @@ export class EamilService{
             //Geneate email subject
             let emailSubject = emailGenerator.generateEmailSubject(userModel.firstname, userModel.lastname)
             //Generate content
-            let content = emailGenerator.generateContent()
+            let content = await emailGenerator.generateContent()
             let emailInfo = plainToClass(EmailModel, await this.emailDao.findEmailInfoByUserId(body.user))
             let mailOption = this.initEmailOptoion(emailInfo.email, emailInfo.to, emailInfo.cc, emailSubject, content)
             console.log(mailOption)

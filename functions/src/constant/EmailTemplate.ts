@@ -1,5 +1,6 @@
 import { TaskModel } from "../model/task/data/TaskModel";
 
+
 export class EmailTemplate{
     
     lastDay:TaskModel[] = new Array()
@@ -23,23 +24,23 @@ export class EmailTemplate{
         this.nextDay = nextDay
     }
 
-    public generateContent(){
+    public async generateContent(){
         this.lastDayDate.setDate(this.todayDate.getDate()-1)
         this.nextDayDate.setDate(this.todayDate.getDate()+1)
         let content = ''+
-            'เมื่อวาน ' + this.formatDate(this.lastDayDate) +'<br>' +
-            + this.initTaskContent(this.lastDay) + '<br><br>' +
+            '<b>เมื่อวาน ' + this.formatDate(this.lastDayDate) +'<b><br>' +
+             await this.initTaskContent(this.lastDay, 'L') + '<br><br>' +
 
-            'วันนี้ ' + this.formatDate(this.todayDate) +'<br>' +
-            + this.initTaskContent(this.today) + '<br><br>' +
+            '<b>วันนี้ ' + this.formatDate(this.todayDate) +'<b><br>' +
+             await this.initTaskContent(this.today, 'T') + '<br><br>' +
 
-            'พรุ่งนี้ ' + this.formatDate(this.nextDayDate) + '<br>' +
-            + this.initTaskContent(this.nextDay) + '<br><br>'
+            '<b>พรุ่งนี้ ' + this.formatDate(this.nextDayDate) + '<b><br>' +
+             await this.initTaskContent(this.nextDay, '') + '<br><br>'
+
         return content
     }
 
     public generateEmailSubject(firstName:string, lastname:string){
-
         let conent =  'แจ้งการทำงานประจำวันที่ ' + this.formatDate(this.todayDate) + ' ของ ' + firstName + ' ' + lastname
         return conent
     }
@@ -48,13 +49,11 @@ export class EmailTemplate{
         return date.getDate() + '/' + date.getMonth() + '/' + date.getFullYear()
     }
 
-    private initTaskContent(task:TaskModel[]){
+    private async initTaskContent(task:TaskModel[], tag:string){
+        let prefix = tag === 'L' ? 'เสร็จ' : 'คาดว่าจะเสร็จ'
         let content = ''
-
         task.forEach(e=>{
-            content = content +' - '+ e.taskDesc + '<br>'
-            console.log('Task is ' + e.taskDesc)
+            content = content +' - '+ e.taskDesc + ' ' + prefix + ' ' + e.taskProgress + '%' + '<br>'
         })
-        return content
     }
 }
