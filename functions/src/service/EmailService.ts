@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { ResponseEmailModel } from '../model/email/response/ResponseEmailModel';
 import { EmailDao } from '../dao/EmailDao'
-import { ExceptionConstant } from '../constant/ExceptionConstant';
 import * as mail from 'nodemailer'
 import { plainToClass } from "class-transformer";
 import { EmailModel } from '../model/email/data/EmailModel';
@@ -9,6 +8,9 @@ import { EmailTemplate } from '../constant/EmailTemplate'
 import { UserService } from '../service/UserService'
 import { UserModel } from '../model/user/data/UserModel';
 import { TaskService } from './TaskService';
+import { ResponseCommon } from '../model/common/ResponseCommon';
+import { StringUtils } from '../utils/StringUtils';
+import { BeConstant } from '../constant/BeConstant';
 
 
 export class EamilService{
@@ -52,12 +54,14 @@ export class EamilService{
             //Generate content
             let content = await emailGenerator.generateContent()
             let emailInfo = plainToClass(EmailModel, await this.emailDao.findEmailInfoByUserId(body.user))
+            await this.validateEmailInfo(emailInfo);
+            console.log('Come here')
             let mailOption = this.initEmailOptoion(emailInfo.email, emailInfo.to, emailInfo.cc, emailSubject, content)
             let sender = this.initTransport(emailInfo.email, emailInfo.password);
             sender.sendMail(mailOption,(err,info)=>{
                 if(err){
-                    console.log('Failed..'+ err)
-                    res.send(new ResponseEmailModel('0005','ERROR', err))
+                    console.log('Failed..' + err)
+                    res.send(new ResponseEmailModel('0005','ERROR', err.message))
                 }else{
                     this.taskService.updateTask(body.lastDay)
                     this.taskService.updateTask(body.today)
@@ -67,19 +71,36 @@ export class EamilService{
                 }
             })
         }catch(e){
-            
+            console.log('Exception occur ' + e)
+            res.send(new ResponseCommon('0002', e))
         }
+        return res
     }
 
     public async initEmail(req:Request, res:Response){
         try{
             let emailDao = new EmailDao()
+            let isUservalid = await new UserService().validateUserId(req.body.user, true)
+            if(isUservalid==BeConstant.NOT_FOUND) throw 'Invalid username'
             await emailDao.saveEmailPassword(req.body)
             res.send(new ResponseEmailModel('0000','SUCCESS', req.body))
         }catch(e){
             console.log('Exception occur ==>> ' + e)
-            res.send(new ResponseEmailModel('0001', ExceptionConstant.SYSTEM_ERROR_PLX_TRY_AGN, e))
+            res.send(new ResponseEmailModel('0001', e, ''))
         }
         return res
+    }
+
+    private async validateEmailInfo(emailInfo:EmailModel){
+        if(StringUtils.isNull(emailInfo.email)){
+            throw 'Please set email on setting screen'
+        }else if(emailInfo.cc == null || emailInfo.cc.length === 0){
+            throw 'Please set Carbon Copy (CC) on setting screen'
+        }else if(StringUtils.isNull(emailInfo.password)){
+            throw 'Please set Email\' password on setting screen'
+        }else if(emailInfo.to == null || emailInfo.to.length === 0){
+            throw 'Please set Destination Email (To) on setting screen'
+        }
+        return 'pass'
     }
 }

@@ -1,7 +1,7 @@
 import * as admin from '../utils/DatabaseUtils'
 import { InitEmailRequest } from '../model/email/request/InitEmailRequest';
 import { PathReferenceConstants } from '../constant/PathReferenceConstants';
-import { BeConstant } from '../constant/BeConstant';
+import { ExceptionConstant } from '../constant/ExceptionConstant';
 
 export class EmailDao{
 
@@ -18,7 +18,7 @@ export class EmailDao{
                     reslove(snapshot.val())
                 }else{
                     console.log("NOT FOUND")
-                    reject(BeConstant.NOT_FOUND)
+                    reject(ExceptionConstant.EMAIL_INFO_NOT_FOUND)
                 }
         })})
     }

@@ -53,7 +53,7 @@ export class EmailTemplate{
         let content = ''
         if(task===null || task.length === 0) return ' - ว่าง ' + '<br>'
         task.forEach(e=>{
-            let procressPercen = e.taskProgress!=''? prefix + ' ' + e.taskProgress + '%' : ' '
+            let procressPercen = (e.taskProgress!='' && e.taskProgress!='0') ? prefix + ' ' + e.taskProgress + '%' : ' '
             content = content +' - '+ e.taskDesc + ' ' + procressPercen + '<br>'
         })
         return content

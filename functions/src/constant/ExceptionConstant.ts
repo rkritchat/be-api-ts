@@ -14,4 +14,5 @@ export class ExceptionConstant {
      static USERNAME_IS_ALREADY_EXSIT = "Username is already exist."
      static INVALID_USERNAME = "Invalid Username."
      static INVALID_USERNAME_OR_PASSWORD = 'Invalid username or password.'
+     static EMAIL_INFO_NOT_FOUND = 'Email information not found, please set it on setitng screen.'
 }
