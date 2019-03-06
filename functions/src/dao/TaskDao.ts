@@ -4,29 +4,23 @@ import * as admin from '../utils/DatabaseUtils'
 import { BeConstant } from '../constant/BeConstant';
 
 export class TaskDao{
-    
-    taskModel:TaskModel
 
-    constructor(taskModel:TaskModel){
-        this.taskModel = taskModel
-        console.log(taskModel.taskId)
-        this.taskModel.taskId = new Date().getTime()
-        this.taskModel.taskProgress = "0"
-    }
-
-    public async createTask(){
+    public async createTask(taskModel:TaskModel){
         try{
-            console.log(this.taskModel.user)
-            await admin.database().ref("/task").child(this.taskModel.user).child(String(this.taskModel.taskId)).set(this.taskModel)  //.child(String(this.taskModel.taskId))
+            console.log('===Create user==== ' + taskModel.user)
+            taskModel.taskId = new Date().getTime()
+            taskModel.taskProgress = "0"
+            await admin.database().ref("/task").child(taskModel.user).child(String(taskModel.taskId)).set(taskModel)
         }catch(e){
             console.log('Exception occur ' + e)
             throw ExceptionConstant.SYSTEM_ERROR_PLX_TRY_AGN
         }
     }
 
-    public async updateTask(){
+    public async updateTask(task:TaskModel){
         try{
-
+            console.log('===Update task===')
+            await admin.database().ref('/task').child(task.user).child(String(task.taskId)).update(task)
         }catch(e){
             console.log('Exception occur ' + e)
             throw ExceptionConstant.SYSTEM_ERROR_PLX_TRY_AGN
@@ -41,7 +35,7 @@ export class TaskDao{
         }
     }
 
-    public async findAllTaskByUserId(user:string){
+    public async findAllTaskByUserId(user:string, isProcessing:boolean){
         try{
             return new Promise((reslove, reject)=>{
                 admin.database().ref("/task").child(user).on("value",(snapshot)=>{
@@ -49,7 +43,9 @@ export class TaskDao{
                         let result:any[] = new Array();
                         snapshot.forEach(e=>{
                             console.log(e.key)
-                            result.push(e.val())
+                            if(e.val().taskProgress != 100 || !isProcessing){
+                                result.push(e.val())
+                            }
                         })
                         reslove(result)
                     }else{

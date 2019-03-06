@@ -33,6 +33,7 @@ export class UserService{
     }
 
     public async validateUserId(userInfo:string, isValidateOnly:boolean){
+        console.log('come herer')
         return await this.userDao.validateUser(userInfo, isValidateOnly)
     }
 

@@ -1,5 +1,4 @@
-import { TaskModel } from "../model/task/data/TaskModel";
-
+import { TaskModel } from '../model/task/data/TaskModel'
 
 export class EmailTemplate{
     
@@ -10,8 +9,7 @@ export class EmailTemplate{
     lastDayDate:Date = new Date()
     nextDayDate:Date = new Date()
 
-
-    constructor(today:TaskModel[], lastDay:TaskModel[], nextDay:TaskModel[]){
+    constructor(lastDay:TaskModel[], today:TaskModel[], nextDay:TaskModel[]){
         console.log('TODAY')
         console.log(today)
         console.log('LASTDAY')
@@ -27,14 +25,15 @@ export class EmailTemplate{
     public async generateContent(){
         this.lastDayDate.setDate(this.todayDate.getDate()-1)
         this.nextDayDate.setDate(this.todayDate.getDate()+1)
+        this.initNextDayDate()
         let content = ''+
-            '<b>เมื่อวาน ' + this.formatDate(this.lastDayDate) +'<b><br>' +
+            '<b>เมื่อวาน ' + this.formatDate(this.lastDayDate) +'</b><br>' +
              await this.initTaskContent(this.lastDay, 'L') + '<br><br>' +
 
-            '<b>วันนี้ ' + this.formatDate(this.todayDate) +'<b><br>' +
+            '<b>วันนี้ ' + this.formatDate(this.todayDate) +'</b><br>' +
              await this.initTaskContent(this.today, 'T') + '<br><br>' +
 
-            '<b>พรุ่งนี้ ' + this.formatDate(this.nextDayDate) + '<b><br>' +
+            '<b>พรุ่งนี้ ' + this.formatDate(this.nextDayDate) + '</b><br>' +
              await this.initTaskContent(this.nextDay, '') + '<br><br>'
 
         return content
@@ -52,8 +51,20 @@ export class EmailTemplate{
     private async initTaskContent(task:TaskModel[], tag:string){
         let prefix = tag === 'L' ? 'เสร็จ' : 'คาดว่าจะเสร็จ'
         let content = ''
+        if(task===null || task.length === 0) return ' - ว่าง ' + '<br>'
         task.forEach(e=>{
-            content = content +' - '+ e.taskDesc + ' ' + prefix + ' ' + e.taskProgress + '%' + '<br>'
+            let procressPercen = e.taskProgress!=''? prefix + ' ' + e.taskProgress + '%' : ' '
+            content = content +' - '+ e.taskDesc + ' ' + procressPercen + '<br>'
         })
+        return content
+    }
+
+    private initNextDayDate(){
+         let tmp:string[] = this.nextDayDate.toDateString().split(" ")
+         if(tmp[0] === 'Sat'){
+            console.log("Tomorow is "+ tmp[0]+', then set to next two day')
+
+            this.nextDayDate.setDate(this.nextDayDate.getDate() + 2)
+         }
     }
 }

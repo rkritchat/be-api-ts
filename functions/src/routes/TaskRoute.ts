@@ -4,7 +4,7 @@ import { TaskService } from '../service/TaskService'
 let route = exporess.Router()
 
 route.put('/add', (req,res)=>{
-    let task =  new TaskService();
+    let task = new TaskService();
     return task.createTask(req, res)
 })
 

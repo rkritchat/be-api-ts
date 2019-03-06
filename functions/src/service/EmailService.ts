@@ -8,11 +8,13 @@ import { EmailModel } from '../model/email/data/EmailModel';
 import { EmailTemplate } from '../constant/EmailTemplate'
 import { UserService } from '../service/UserService'
 import { UserModel } from '../model/user/data/UserModel';
+import { TaskService } from './TaskService';
 
 
 export class EamilService{
 
     emailDao = new EmailDao()
+    taskService = new TaskService()
 
     private initTransport(email:string, pass:string){
         return mail.createTransport({
@@ -51,13 +53,15 @@ export class EamilService{
             let content = await emailGenerator.generateContent()
             let emailInfo = plainToClass(EmailModel, await this.emailDao.findEmailInfoByUserId(body.user))
             let mailOption = this.initEmailOptoion(emailInfo.email, emailInfo.to, emailInfo.cc, emailSubject, content)
-            console.log(mailOption)
             let sender = this.initTransport(emailInfo.email, emailInfo.password);
             sender.sendMail(mailOption,(err,info)=>{
                 if(err){
                     console.log('Failed..'+ err)
                     res.send(new ResponseEmailModel('0005','ERROR', err))
                 }else{
+                    this.taskService.updateTask(body.lastDay)
+                    this.taskService.updateTask(body.today)
+                    this.taskService.updateTask(body.nextDay)
                     console.log('Success..'+ info)
                     res.send(new ResponseEmailModel('0000','SUCCESS', info))
                 }
