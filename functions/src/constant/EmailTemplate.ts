@@ -1,4 +1,5 @@
 import { TaskModel } from '../model/task/data/TaskModel'
+import { StringUtils } from '../utils/StringUtils';
 
 export class EmailTemplate{
     
@@ -26,30 +27,21 @@ export class EmailTemplate{
     public async generateContent(){
         this.initDate()
         let content = ''+
-            '<b>เมื่อวาน ' + this.formatDate(this.lastDayDate) +'</b><br>' +
+            '<b>เมื่อวาน ' + StringUtils.formatDateToString(this.lastDayDate) +'</b><br>' +
              await this.initTaskContent(this.lastDay, 'L') + '<br><br>' +
 
-            '<b>วันนี้ ' + this.formatDate(this.todayDate) +'</b><br>' +
+            '<b>วันนี้ ' + StringUtils.formatDateToString(this.todayDate) +'</b><br>' +
              await this.initTaskContent(this.today, 'T') + '<br><br>' +
 
-            '<b>พรุ่งนี้ ' + this.formatDate(this.nextDayDate) + '</b><br>' +
+            '<b>พรุ่งนี้ ' + StringUtils.formatDateToString(this.nextDayDate) + '</b><br>' +
              await this.initTaskContent(this.nextDay, '') + '<br><br>'
 
         return content
     }
 
     public generateEmailSubject(firstName:string, lastname:string, nickName:string){
-        let conent = 'แจ้งการทำงานประจำวันที่ ' + this.formatDate(this.todayDate) + ' ของ ' + firstName + ' ' + lastname + ' ('+nickName+')'
+        let conent = 'แจ้งการทำงานประจำวันที่ ' +  StringUtils.formatDateToString(this.todayDate) + ' ของ ' + firstName + ' ' + lastname + ' ('+nickName+')'
         return conent
-    }
-
-    private formatDate(date:Date){
-        return date.getDate() + '/' + this.formatMonth(date) + '/' + date.getFullYear()
-    }
-
-    private formatMonth(date:Date){
-        let month = date.getMonth() + 1
-        return  month < 10 ? '0'+month : month
     }
 
     private async initTaskContent(task:TaskModel[], tag:string){

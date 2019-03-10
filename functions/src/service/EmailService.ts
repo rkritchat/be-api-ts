@@ -71,7 +71,7 @@ export class EamilService{
             })
         }catch(e){
             console.log('Exception occur ' + e)
-            res.send(new ResponseCommon('0002', e))
+            res.send(new ResponseCommon('0002', String(e)))
         }
         return res
     }
@@ -93,11 +93,11 @@ export class EamilService{
     private async validateEmailInfo(emailInfo:EmailModel){
         if(StringUtils.isNull(emailInfo.email)){
             throw 'Please set email on setting screen'
-        }else if(emailInfo.cc == null || emailInfo.cc.length === 0){
+        }else if(emailInfo.cc === undefined || emailInfo.cc.length === 0){
             throw 'Please set Carbon Copy (CC) on setting screen'
         }else if(StringUtils.isNull(emailInfo.password)){
             throw 'Please set Email\'s password on setting screen'
-        }else if(emailInfo.to == null || emailInfo.to.length === 0){
+        }else if(emailInfo.to === undefined || emailInfo.to.length === 0){
             throw 'Please set Destination Email (To) on setting screen'
         }
         return 'pass'
