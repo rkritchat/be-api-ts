@@ -18,7 +18,7 @@ export class UserService{
     userDao = new UserDao();
     public async register(req:Request, res:Response){
         let body = req.body
-        let userInfo = new UserModel(body.firstname, body.lastname, body.user, body.pwd, body.tell, body.email)
+        let userInfo = new UserModel(body.firstname, body.lastname, body.user, body.pwd, body.tell, body.email, body.nickName)
         try{
             console.log(userInfo)
             await this.valdiateRequiredField(userInfo)

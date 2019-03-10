@@ -50,7 +50,7 @@ export class EamilService{
             let emailGenerator = new EmailTemplate(body.lastDay, body.today, body.nextDay)
             let userModel = plainToClass(UserModel, await new UserService().validateUserId(body.user, false))
             //Geneate email subject
-            let emailSubject = emailGenerator.generateEmailSubject(userModel.firstname, userModel.lastname)
+            let emailSubject = emailGenerator.generateEmailSubject(userModel.firstname, userModel.lastname, userModel.nickName)
             //Generate content
             let content = await emailGenerator.generateContent()
             let emailInfo = plainToClass(EmailModel, await this.emailDao.findEmailInfoByUserId(body.user))

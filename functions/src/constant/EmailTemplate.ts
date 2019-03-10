@@ -23,9 +23,7 @@ export class EmailTemplate{
     }
 
     public async generateContent(){
-        this.lastDayDate.setDate(this.todayDate.getDate()-1)
-        this.nextDayDate.setDate(this.todayDate.getDate()+1)
-        this.initNextDayDate()
+        this.initDate()
         let content = ''+
             '<b>เมื่อวาน ' + this.formatDate(this.lastDayDate) +'</b><br>' +
              await this.initTaskContent(this.lastDay, 'L') + '<br><br>' +
@@ -39,8 +37,8 @@ export class EmailTemplate{
         return content
     }
 
-    public generateEmailSubject(firstName:string, lastname:string){
-        let conent =  'แจ้งการทำงานประจำวันที่ ' + this.formatDate(this.todayDate) + ' ของ ' + firstName + ' ' + lastname
+    public generateEmailSubject(firstName:string, lastname:string, nickName:string){
+        let conent = 'แจ้งการทำงานประจำวันที่ ' + this.formatDate(this.todayDate) + ' ของ ' + firstName + ' ' + lastname + ' ('+nickName+')'
         return conent
     }
 
@@ -59,12 +57,13 @@ export class EmailTemplate{
         return content
     }
 
-    private initNextDayDate(){
-         let tmp:string[] = this.nextDayDate.toDateString().split(" ")
-         if(tmp[0] === 'Sat'){
+    private initDate(){
+        this.lastDayDate.setDate(this.todayDate.getDate()-1)
+        this.nextDayDate.setDate(this.todayDate.getDate()+1)
+        let tmp:string[] = this.nextDayDate.toDateString().split(" ")
+        if(tmp[0] === 'Sat'){
             console.log("Tomorow is "+ tmp[0]+', then set to next two day')
-
             this.nextDayDate.setDate(this.nextDayDate.getDate() + 2)
-         }
+        }
     }
 }
