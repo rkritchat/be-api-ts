@@ -60,10 +60,15 @@ export class EmailTemplate{
     private initDate(){
         this.lastDayDate.setDate(this.todayDate.getDate()-1)
         this.nextDayDate.setDate(this.todayDate.getDate()+1)
-        let tmp:string[] = this.nextDayDate.toDateString().split(" ")
-        if(tmp[0] === 'Sat'){
-            console.log("Tomorow is "+ tmp[0]+', then set to next two day')
+        let nextDayDateToString:string[] = this.nextDayDate.toDateString().split(" ")
+        let lastDayDateToString:string[] = this.lastDayDate.toDateString().split(" ")
+
+        if(nextDayDateToString[0] === 'Sat'){
+            console.log("Tomorow is "+ nextDayDateToString[0]+', then set to next two day')
             this.nextDayDate.setDate(this.nextDayDate.getDate() + 2)
+        }else if(lastDayDateToString[0] === 'Sun'){
+            console.log("Last day date is "+ lastDayDateToString[0]+', then set to last friday')
+            this.lastDayDate.setDate(this.nextDayDate.getDate() - 2)
         }
     }
 }
