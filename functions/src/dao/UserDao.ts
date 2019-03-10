@@ -5,7 +5,7 @@ import { ExceptionConstant } from '../constant/ExceptionConstant'
 
 export class UserDao {
     
-    public async createUser(userInfo: UserModel){
+    public async save(userInfo: UserModel){
         try{
             console.log("====create user=====")
             await admin.database().ref("/users").child(userInfo.user).set(userInfo)

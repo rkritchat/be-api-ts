@@ -23,7 +23,7 @@ export class UserService{
             console.log(userInfo)
             await this.valdiateRequiredField(userInfo)
             if(await this.validateUserId(userInfo.user, true) === BeConstant.FOUND)throw ExceptionConstant.USERNAME_IS_ALREADY_EXSIT
-            await this.userDao.createUser(userInfo)
+            await this.userDao.save(userInfo)
             res.send(new ResponseUserModel("0000", "Create user successfully", userInfo))
         }catch(e){
             console.log(e)
@@ -64,10 +64,24 @@ export class UserService{
             let email = await new EamilService().getEmailInfoByUserId(user.user)
             console.log(email)
             let emailModel = plainToClass(EmailModel, email)
-            userModel.pwd = ''
             emailModel.password = ''
             res.send(new ResponseUserLogin('0000','Login successfully', user.user, userModel, emailModel))
         }catch(e){
+            console.log('Exception occur '+ e)
+            res.send(new ResponseCommon('0001', e))
+        }
+        return res
+    }
+
+    public async updateUserInfo(req:Request, res:Response){
+        try{
+            let body = req.body
+            let userInfo = new UserModel(body.firstname, body.lastname, body.user, body.pwd, body.tell, body.email, body.nickName)
+            await this.valdiateRequiredField(userInfo);
+            await this.userDao.save(userInfo) 
+            res.send(new ResponseUserModel('0000','Update user information successfully', userInfo))
+        }catch(e){
+            console.log('Exception occur '+ e)
             res.send(new ResponseCommon('0001', e))
         }
         return res

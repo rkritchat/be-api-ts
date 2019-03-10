@@ -13,7 +13,7 @@ route.post('/send', (req,res)=>{
  * Required this because next time when sending email
  * System will user this infomation for send email
 */
-route.post('/init', (req,res) =>{
+route.patch('/init', (req,res) =>{
     let emailService = new EamilService()
     return emailService.initEmail(req, res)
 })
