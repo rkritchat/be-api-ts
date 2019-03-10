@@ -55,7 +55,6 @@ export class EamilService{
             let content = await emailGenerator.generateContent()
             let emailInfo = plainToClass(EmailModel, await this.emailDao.findEmailInfoByUserId(body.user))
             await this.validateEmailInfo(emailInfo);
-            console.log('Come here')
             let mailOption = this.initEmailOptoion(emailInfo.email, emailInfo.to, emailInfo.cc, emailSubject, content)
             let sender = this.initTransport(emailInfo.email, emailInfo.password);
             sender.sendMail(mailOption,(err,info)=>{
@@ -97,7 +96,7 @@ export class EamilService{
         }else if(emailInfo.cc == null || emailInfo.cc.length === 0){
             throw 'Please set Carbon Copy (CC) on setting screen'
         }else if(StringUtils.isNull(emailInfo.password)){
-            throw 'Please set Email\' password on setting screen'
+            throw 'Please set Email\'s password on setting screen'
         }else if(emailInfo.to == null || emailInfo.to.length === 0){
             throw 'Please set Destination Email (To) on setting screen'
         }

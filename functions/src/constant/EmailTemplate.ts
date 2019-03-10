@@ -20,6 +20,7 @@ export class EmailTemplate{
         this.lastDay = lastDay
         this.today = today
         this.nextDay = nextDay
+        console.log('Today ' + this.todayDate)
     }
 
     public async generateContent(){
@@ -43,7 +44,7 @@ export class EmailTemplate{
     }
 
     private formatDate(date:Date){
-        return date.getDate() + '/' + date.getMonth() + '/' + date.getFullYear()
+        return date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear()
     }
 
     private async initTaskContent(task:TaskModel[], tag:string){
