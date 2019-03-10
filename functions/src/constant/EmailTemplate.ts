@@ -44,7 +44,12 @@ export class EmailTemplate{
     }
 
     private formatDate(date:Date){
-        return date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear()
+        return date.getDate() + '/' + this.formatMonth(date) + '/' + date.getFullYear()
+    }
+
+    private formatMonth(date:Date){
+        let month = date.getMonth() + 1
+        return  month < 10 ? '0'+month : month
     }
 
     private async initTaskContent(task:TaskModel[], tag:string){
