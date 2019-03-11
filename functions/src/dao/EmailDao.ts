@@ -9,7 +9,7 @@ export class EmailDao{
         await admin.database().ref(PathReferenceConstants.EMAIL_INFO).child(req.user).set(req.emailModel);
     }
 
-    public async findEmailInfoByUserId(user:string){
+    public async findEmailInfoByUserId(user:string, isValidateRequired:boolean){
         console.log('=== get emailInfo ==== ')
         return new Promise((reslove,reject)=>{ 
             admin.database().ref(PathReferenceConstants.EMAIL_INFO).child(user).on("value", snapshot =>{
@@ -18,7 +18,11 @@ export class EmailDao{
                     reslove(snapshot.val())
                 }else{
                     console.log("NOT FOUND")
-                    reject(ExceptionConstant.EMAIL_INFO_NOT_FOUND)
+                    if(isValidateRequired){
+                        reject(ExceptionConstant.EMAIL_INFO_NOT_FOUND)
+                    }else{
+                        reslove('')
+                    }
                 }
         })})
     }

@@ -40,8 +40,8 @@ export class EamilService{
         }
     }
 
-    public async getEmailInfoByUserId(user:string){
-        return await this.emailDao.findEmailInfoByUserId(user)
+    public async getEmailInfoByUserId(user:string, isValidateRequired:boolean){
+        return await this.emailDao.findEmailInfoByUserId(user, isValidateRequired)
     }
    
     public async sendEmail(req:Request, res:Response){
@@ -53,7 +53,7 @@ export class EamilService{
             let emailSubject = emailGenerator.generateEmailSubject(userModel.firstname, userModel.lastname, userModel.nickName)
             //Generate content
             let content = await emailGenerator.generateContent()
-            let emailInfo = plainToClass(EmailModel, await this.emailDao.findEmailInfoByUserId(body.user))
+            let emailInfo = plainToClass(EmailModel, await this.emailDao.findEmailInfoByUserId(body.user, true))
             await this.validateEmailInfo(emailInfo);
             let mailOption = this.initEmailOptoion(emailInfo.email, emailInfo.to, emailInfo.cc, emailSubject, content)
             let sender = this.initTransport(emailInfo.email, emailInfo.password);

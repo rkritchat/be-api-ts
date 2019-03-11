@@ -22,7 +22,7 @@ export class UserService{
         try{
             console.log(userInfo)
             await this.valdiateRequiredField(userInfo)
-            if(await this.validateUserId(userInfo.user, true) === BeConstant.FOUND)throw ExceptionConstant.USERNAME_IS_ALREADY_EXSIT
+            if(await this.validateUserId(userInfo.user, true) === BeConstant.FOUND) throw ExceptionConstant.USERNAME_IS_ALREADY_EXSIT
             await this.userDao.save(userInfo)
             res.send(new ResponseUserModel("0000", "Create user successfully", userInfo))
         }catch(e){
@@ -61,10 +61,8 @@ export class UserService{
             let user = new UserLoginRequest(req.body.user, req.body.pwd)
             let result = await this.userDao.validateUserAndPwd(user.user, user.pwd)
             let userModel = plainToClass(UserModel, result)
-            let email = await new EamilService().getEmailInfoByUserId(user.user)
-            console.log(email)
-            let emailModel = plainToClass(EmailModel, email)
-            emailModel.password = ''
+            let email = await new EamilService().getEmailInfoByUserId(user.user, false)
+            let emailModel = email===''? null : plainToClass(EmailModel, email)
             res.send(new ResponseUserLogin('0000','Login successfully', user.user, userModel, emailModel))
         }catch(e){
             console.log('Exception occur '+ e)

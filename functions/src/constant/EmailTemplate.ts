@@ -66,7 +66,7 @@ export class EmailTemplate{
             this.nextDayDate.setDate(this.nextDayDate.getDate() + 2)
         }else if(lastDayDateToString[0] === 'Sun'){
             console.log("Last day date is "+ lastDayDateToString[0]+', then set to last friday')
-            this.lastDayDate.setDate(this.nextDayDate.getDate() - 2)
+            this.lastDayDate.setDate(this.lastDayDate.getDate() - 2)
         }
     }
 }

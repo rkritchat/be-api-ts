@@ -9,7 +9,7 @@ export class ResponseUserLogin{
     userModel:UserModel
     emailModel:EmailModel
 
-    constructor(statusCode:string, statusDesc:string, user:string, userModel:UserModel, emailModel:EmailModel){
+    constructor(statusCode:string, statusDesc:string, user:string, userModel:UserModel, emailModel:any){
         this.statusCode = statusCode
         this.statusDesc = statusDesc
         this.user = user
