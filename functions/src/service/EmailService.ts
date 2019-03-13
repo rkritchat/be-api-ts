@@ -11,6 +11,7 @@ import { TaskService } from './TaskService';
 import { ResponseCommon } from '../model/common/ResponseCommon';
 import { StringUtils } from '../utils/StringUtils';
 import { BeConstant } from '../constant/BeConstant';
+import { TaskModel } from '../model/task/data/TaskModel';
 
 
 export class EamilService{
@@ -62,11 +63,14 @@ export class EamilService{
                     console.log('Failed..' + err)
                     res.send(new ResponseEmailModel('0005','ERROR', err.message))
                 }else{
-                    this.taskService.updateTask(body.lastDay)
-                    this.taskService.updateTask(body.today)
-                    this.taskService.updateTask(body.nextDay)
+                    let emails = this.addAllEmailsToArray(emailGenerator)
+                    if(emails!=null){
+                        let result = this.removeDuplicate(emails)
+                        console.log(result)
+                        this.taskService.updateTask(result)
+                    }
                     console.log('Success..'+ info)
-                    res.send(new ResponseEmailModel('0000','SUCCESS', info))
+                    res.send(new ResponseEmailModel('0000','SUCCESS', emailGenerator))
                 }
             })
         }catch(e){
@@ -101,5 +105,51 @@ export class EamilService{
             throw 'Please set Destination Email (To) on setting screen'
         }
         return 'pass'
+    }
+
+    private removeDuplicate(emails:TaskModel[]){
+        let result:TaskModel[] = new Array()
+        let uniuq = new Map<number,TaskModel>();
+        emails.forEach(e=>{
+            if(e.taskProgress!='0'){
+                if(uniuq.get(e.taskId)==null){
+                    uniuq.set(e.taskId, e)
+                }else{
+                    let email = uniuq.get(e.taskId)
+                    if(email!=null && email.taskProgress < e.taskProgress){
+                        uniuq.set(e.taskId, e)
+                    }
+                }
+            }
+        })
+        uniuq.forEach(e=>{
+            result.push(e)
+        })
+        return result
+    }
+
+    private addAllEmailsToArray(emails:EmailTemplate){
+        let allEmail:TaskModel[] = new Array() 
+        if(emails.lastDay!=null){
+            this.allAllArray(emails.lastDay, allEmail)
+            this.allAllArray(emails.today, allEmail)
+            this.allAllArray(emails.nextDay, allEmail)
+            return allEmail
+        }else if(emails.today!=null){
+            this.allAllArray(emails.today, allEmail)
+            this.allAllArray(emails.nextDay, allEmail)
+            return allEmail
+        }else if(emails.nextDay!=null){
+            this.allAllArray(emails.nextDay, allEmail)
+            return allEmail
+        }else{
+            return null
+        }
+    }
+
+    private async allAllArray(tasks:TaskModel[], allEmail:TaskModel[]){
+        tasks.forEach(e=>{
+            allEmail.push(e)
+        })
     }
 }
