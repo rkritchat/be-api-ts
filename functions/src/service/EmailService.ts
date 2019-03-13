@@ -50,9 +50,7 @@ export class EamilService{
             let body = req.body
             let emailGenerator = new EmailTemplate(body.lastDay, body.today, body.nextDay)
             let userModel = plainToClass(UserModel, await new UserService().validateUserId(body.user, false))
-            //Geneate email subject
             let emailSubject = emailGenerator.generateEmailSubject(userModel.firstname, userModel.lastname, userModel.nickName)
-            //Generate content
             let content = await emailGenerator.generateContent()
             let emailInfo = plainToClass(EmailModel, await this.emailDao.findEmailInfoByUserId(body.user, true))
             await this.validateEmailInfo(emailInfo);
@@ -64,13 +62,15 @@ export class EamilService{
                     res.send(new ResponseEmailModel('0005','ERROR', err.message))
                 }else{
                     let emails = this.addAllEmailsToArray(emailGenerator)
+                    let response:TaskModel[] = new Array()
                     if(emails!=null){
+                        response = this.generateResponse(emails)
                         let result = this.removeDuplicate(emails)
                         console.log(result)
                         this.taskService.updateTask(result)
                     }
                     console.log('Success..'+ info)
-                    res.send(new ResponseEmailModel('0000','SUCCESS', emailGenerator))
+                    res.send(new ResponseEmailModel('0000','SUCCESS', response))
                 }
             })
         }catch(e){
@@ -151,5 +151,15 @@ export class EamilService{
         tasks.forEach(e=>{
             allEmail.push(e)
         })
+    }
+
+    private generateResponse(allEmail:TaskModel[]){
+        let result:TaskModel[] = new Array()
+        allEmail.forEach(e=>{
+            if(e.taskProgress!='100'){
+                result.push(e)
+            }
+        })
+        return result
     }
 }
