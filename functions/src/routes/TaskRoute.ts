@@ -8,8 +8,9 @@ route.put('/add', (req,res)=>{
     return task.createTask(req, res)
 })
 
-route.patch('/modify', (req,res)=>{
-
+route.patch('/reset', (req,res)=>{
+    let task = new TaskService();
+    return task.resetTask(req,res)
 })
 
 route.delete('/dellete', (req,res)=>{

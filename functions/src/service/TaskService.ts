@@ -6,6 +6,8 @@ import { BeConstant } from '../constant/BeConstant';
 import { ExceptionConstant } from '../constant/ExceptionConstant';
 import { SuccessConstants } from '../constant/SuccessConstants';
 import { TaskModel } from '../model/task/data/TaskModel';
+import { UpdateTaskToIRequest } from '../model/task/request/UpdateTaskToIRequest';
+import { ResponseCommon } from '../model/common/ResponseCommon';
 
 export class TaskService{
 
@@ -35,10 +37,24 @@ export class TaskService{
         return res
     }
 
+    public async resetTask(req:Request, res:Response){
+        let alltask = new UpdateTaskToIRequest(req.body.allTask)
+        let updateList:TaskModel[] = new Array()
+        alltask.allTask.forEach(e=>{
+            if(e.taskStatus!='I'){
+                e.taskStatus = 'I'
+                updateList.push(e)
+            }
+        })
+        await this.updateTask(updateList)
+        res.send(new ResponseCommon('0000', SuccessConstants.UPDATE_TASK_SUCCESSFULLY))
+    }
+
     public async updateTask(tasks:TaskModel[]){
         tasks.forEach(e=>{
              this.taskDao.updateTask(e)
         })
+        return 'Success'
     }
 
 }
