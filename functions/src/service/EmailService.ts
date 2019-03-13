@@ -156,7 +156,7 @@ export class EamilService{
     private generateResponse(allEmail:TaskModel[]){
         let result:TaskModel[] = new Array()
         allEmail.forEach(e=>{
-            if(e.taskProgress!='100'){
+            if(e.taskProgress!='100' || e.taskStatus==='L'){
                 result.push(e)
             }
         })
