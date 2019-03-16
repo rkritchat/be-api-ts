@@ -9,25 +9,23 @@ import { UserService } from '../service/UserService'
 import { UserModel } from '../model/user/data/UserModel';
 import { TaskService } from './TaskService';
 import { ResponseCommon } from '../model/common/ResponseCommon';
-import { StringUtils } from '../utils/StringUtils';
-import { BeConstant } from '../constant/BeConstant';
 import { TaskModel } from '../model/task/data/TaskModel';
-
 
 export class EamilService{
 
     emailDao = new EmailDao()
     taskService = new TaskService()
 
-    private initTransport(email:string, pass:string){
+    private initTransport(email:string, token:string){
         return mail.createTransport({
             host: 'smtp.gmail.com',
             port: 465,
             secure: true,
             auth: {
+                type: 'OAuth2',
                 user: email,
-                pass: pass
-            } 
+                accessToken: token
+            }
         })
     }
 
@@ -48,6 +46,7 @@ export class EamilService{
     public async sendEmail(req:Request, res:Response){
         try{
             let body = req.body
+            console.log(body.token)
             let emailGenerator = new EmailTemplate(body.lastDay, body.today, body.nextDay)
             let userModel = plainToClass(UserModel, await new UserService().validateUserId(body.user, false))
             let emailSubject = emailGenerator.generateEmailSubject(userModel.firstname, userModel.lastname, userModel.nickName)
@@ -55,7 +54,7 @@ export class EamilService{
             let emailInfo = plainToClass(EmailModel, await this.emailDao.findEmailInfoByUserId(body.user, true))
             await this.validateEmailInfo(emailInfo);
             let mailOption = this.initEmailOptoion(emailInfo.email, emailInfo.to, emailInfo.cc, emailSubject, content)
-            let sender = this.initTransport(emailInfo.email, emailInfo.password);
+            let sender = this.initTransport(body.user, body.token);
             sender.sendMail(mailOption,(err,info)=>{
                 if(err){
                     console.log('Failed..' + err)
@@ -83,9 +82,7 @@ export class EamilService{
     public async initEmail(req:Request, res:Response){
         try{
             let emailDao = new EmailDao()
-            let isUservalid = await new UserService().validateUserId(req.body.user, true)
-            if(isUservalid==BeConstant.NOT_FOUND) throw 'Invalid username'
-            await emailDao.saveEmailPassword(req.body)
+            await emailDao.updateEmailInfo(req.body)
             res.send(new ResponseEmailModel('0000','SUCCESS', req.body))
         }catch(e){
             console.log('Exception occur ==>> ' + e)
@@ -95,12 +92,8 @@ export class EamilService{
     }
 
     private async validateEmailInfo(emailInfo:EmailModel){
-        if(StringUtils.isNull(emailInfo.email)){
-            throw 'Please set email on setting screen'
-        }else if(emailInfo.cc === undefined || emailInfo.cc.length === 0){
+        if(emailInfo.cc === undefined || emailInfo.cc.length === 0){
             throw 'Please set Carbon Copy (CC) on setting screen'
-        }else if(StringUtils.isNull(emailInfo.password)){
-            throw 'Please set Email\'s password on setting screen'
         }else if(emailInfo.to === undefined || emailInfo.to.length === 0){
             throw 'Please set Destination Email (To) on setting screen'
         }

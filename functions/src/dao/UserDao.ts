@@ -2,13 +2,14 @@ import * as admin from '../utils/DatabaseUtils'
 import { BeConstant } from '../constant/BeConstant'
 import { UserModel } from '../model/user/data/UserModel';
 import { ExceptionConstant } from '../constant/ExceptionConstant'
+import * as key from 'crypto-js'
 
 export class UserDao {
     
     public async save(userInfo: UserModel){
         try{
             console.log("====create user=====")
-            await admin.database().ref("/users").child(userInfo.user).set(userInfo)
+            await admin.database().ref("/users").child(key.SHA256(userInfo.user).toString()).set(userInfo)
         }catch(e){
             console.log('Exception occur while inser data' + e)
             throw ExceptionConstant.SYSTEM_ERROR_PLX_TRY_AGN
@@ -18,7 +19,7 @@ export class UserDao {
     public async validateUser(userInfo: string, isValidateOnly:boolean){
         console.log("====validate user======")
         return new Promise((reslove, reject)=>{
-            admin.database().ref("/users").child(userInfo).on("value",(snapshot)=>{
+            admin.database().ref("/users").child(key.SHA256(userInfo).toString()).on("value",(snapshot)=>{
             if(snapshot!=null && snapshot.val()!=null){
                 reslove(isValidateOnly? BeConstant.FOUND:snapshot.val())
                 console.log("====FOUND======")
@@ -29,20 +30,14 @@ export class UserDao {
         })});
     }
 
-    public async validateUserAndPwd(user:string, pwd:string){
+    public async fetchUserDetail(user:string){
         console.log("==== validateUserAndPwd ======")
         return new Promise((reslove,reject)=>{
-            admin.database().ref("/users").child(user).on("value",(snapshot)=>{
+            admin.database().ref("/users").child(key.SHA256(user).toString()).on("value",(snapshot)=>{
                 if(snapshot!=null && snapshot.val()!=null){
-                    if(snapshot.child('pwd').val() === pwd){
-                        console.log("==== Password is match ======")
-                        reslove(snapshot.val())
-                    }else{
-                        console.log("==== Password is mot match ======")
-                        reject(ExceptionConstant.INVALID_USERNAME_OR_PASSWORD)
-                    }
+                    reslove(snapshot.val())
                 }else{
-                    reject(ExceptionConstant.INVALID_USERNAME_OR_PASSWORD)
+                    admin.database().ref("/users").child(key.SHA256(user).toString()).set(new UserModel('','','','',user, ''))
                 }
             })
         })

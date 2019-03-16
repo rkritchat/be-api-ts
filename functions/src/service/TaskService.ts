@@ -1,9 +1,6 @@
 import { TaskDao } from '../dao/TaskDao'
 import { Request, Response } from 'express'
 import { ResponseTaskModel } from '../model/task/response/ResponseTaskModel'
-import { UserService } from './UserService';
-import { BeConstant } from '../constant/BeConstant';
-import { ExceptionConstant } from '../constant/ExceptionConstant';
 import { SuccessConstants } from '../constant/SuccessConstants';
 import { TaskModel } from '../model/task/data/TaskModel';
 import { UpdateTaskToIRequest } from '../model/task/request/UpdateTaskToIRequest';
@@ -14,10 +11,7 @@ export class TaskService{
     taskDao = new TaskDao()
 
     public async createTask(req:Request, res:Response){
-        let userService = new UserService()
         try{
-            let result = await userService.validateUserId(req.body.user, true)
-            if(result === BeConstant.NOT_FOUND) throw ExceptionConstant.INVALID_USERNAME
             await this.taskDao.createTask(req.body)
             res.send(new ResponseTaskModel('0000', 'Add task successfully', req.body))
         }catch(e){
@@ -35,6 +29,10 @@ export class TaskService{
             res.send(new ResponseTaskModel('0001', e, req.body))
         }
         return res
+    }
+
+    public async findTaskByUser(user:string){
+        return await this.taskDao.findAllTaskByUserId(user, true)            
     }
 
     public async resetTask(req:Request, res:Response){

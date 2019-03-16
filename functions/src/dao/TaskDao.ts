@@ -1,9 +1,8 @@
 import { TaskModel } from '../model/task/data/TaskModel';
 import { ExceptionConstant } from '../constant/ExceptionConstant'
 import * as admin from '../utils/DatabaseUtils'
-import { BeConstant } from '../constant/BeConstant';
 import { StringUtils } from '../utils/StringUtils';
-
+import * as key from 'crypto-js'
 export class TaskDao{
 
     public async createTask(taskModel:TaskModel){
@@ -14,7 +13,7 @@ export class TaskDao{
             taskModel.taskProgress = "0"
             taskModel.updateDate = StringUtils.formatDateToString(todayDate)
             console.log(taskModel.updateDate)
-            await admin.database().ref("/task").child(taskModel.user).child(String(taskModel.taskId)).set(taskModel)
+            await admin.database().ref("/task").child(key.SHA256(taskModel.user).toString()).child(String(taskModel.taskId)).set(taskModel)
         }catch(e){
             console.log('Exception occur ' + e)
             throw ExceptionConstant.SYSTEM_ERROR_PLX_TRY_AGN
@@ -25,7 +24,7 @@ export class TaskDao{
         try{
             console.log('===Update task===')
             taskModel.updateDate = StringUtils.formatDateToString(new Date())
-            await admin.database().ref('/task').child(taskModel.user).child(String(taskModel.taskId)).update(taskModel)
+            await admin.database().ref('/task').child(key.SHA256(taskModel.user).toString()).child(String(taskModel.taskId)).update(taskModel)
         }catch(e){
             console.log('Exception occur ' + e)
             throw ExceptionConstant.SYSTEM_ERROR_PLX_TRY_AGN
@@ -43,9 +42,9 @@ export class TaskDao{
     public async findAllTaskByUserId(user:string, isProcessing:boolean){
         try{
             return new Promise((reslove, reject)=>{
-                admin.database().ref("/task").child(user).on("value",(snapshot)=>{
+                admin.database().ref("/task").child(key.SHA256(user).toString()).on("value",(snapshot)=>{
+                    let result:any[] = new Array();
                     if(snapshot!=null){
-                        let result:any[] = new Array();
                         snapshot.forEach(e=>{
                             console.log(e.key)
                             if(e.val().taskProgress != 100 || !isProcessing){
@@ -55,7 +54,7 @@ export class TaskDao{
                         reslove(result)
                     }else{
                         console.log('Not found task from user: ' + user)
-                        reslove(BeConstant.NOT_FOUND)
+                        reslove(result)
                     }
             })})
         }catch(e){
